@@ -92,12 +92,21 @@ class BaseGenericModelAdmin(object):
                 val = force_text('%s/%s' % (c.app_label, c.model))
                 params = self.content_type_lookups.get('%s.%s' % (c.app_label, c.model), {})
                 params = url_params_from_lookup_dict(params)
-                if self.content_type_whitelist:
-                    if val in self.content_type_whitelist:
-                        obj_dict[c.id] = (val, params)
-                elif val not in self.content_type_blacklist:
-                    obj_dict[c.id] = (val, params)
-        
+                if ((self.content_type_whitelist and
+                        val in self.content_type_whitelist) or
+                        val not in self.content_type_blacklist):
+                    try:
+                        model_name = unicode(c.model_class()._meta.verbose_name)
+                    except AttributeError:
+                        model_name = None
+                    try:
+                        app_label = self.app_label_override[c.app_label]
+                    except (AttributeError, KeyError):
+                        app_label = c.app_label
+
+                    obj_dict[c.id] = (val, params, {'app_label': app_label,
+                                                    'model_label': model_name})
+
             data = {
                 'url_array': obj_dict,
                 'fields': self.get_generic_field_list(request),

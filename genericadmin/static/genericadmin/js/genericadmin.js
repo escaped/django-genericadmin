@@ -25,21 +25,22 @@
 
             // polish the look of the select
             select.find('option').each(function() {
-                var key, opt;
+                var key, opt, model_label, app_label;
 
                 if (this.value) {
                     if (that.url_array[this.value]) {
-                        key = that.url_array[this.value][0].split('/')[0];
-                        
+                        model_label = that.url_array[this.value][2]['model_label'];
+                        app_label = that.url_array[this.value][2]['app_label'];
+
                         opt = $(this).clone();
-                        opt.text(that.capFirst(opt.text()));
-                        if ($.inArray(key, opt_keys) < 0) {
-                            opt_keys.push(key);
+                        opt.text(that.capFirst(model_label));
+                        if ($.inArray(app_label, opt_keys) < 0) {
+                            opt_keys.push(app_label);
                             // if it's the first time in array
                             // it's the first time in dict
-                            opt_dict[key] = [opt];
+                            opt_dict[app_label] = [opt];
                         } else {
-                            opt_dict[key].push(opt);
+                            opt_dict[app_label].push(opt);
                         }
                     }
                 } else {
